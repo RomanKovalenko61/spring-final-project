@@ -1,0 +1,45 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # для dev можно указать секрет, в prod - external vault
+          jwk-set-uri: http://localhost:8089/.well-known/jwks.json
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%X{X-Correlation-Id}] %logger{36} - %msg%n"
+
+gateway:
+  routes:
+    - id: booking-service
+      uri: lb://spring-final-booking
+      predicates:
+        - Path=/api/bookings/**
+      filters:
+        - RewritePath=/api/bookings/(?<remaining>.*), /api/bookings/${remaining}
+    - id: hotel-service
+      uri: lb://spring-final-hotel
+      predicates:
+        - Path=/api/hotels/**
+      filters:
+        - RewritePath=/api/hotels/(?<remaining>.*), /api/hotels/${remaining}
+
