@@ -4,13 +4,6 @@ server:
 spring:
   application:
     name: api-gateway
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
-
-spring:
   security:
     oauth2:
       resourceserver:
@@ -42,4 +35,3 @@ gateway:
         - Path=/api/hotels/**
       filters:
         - RewritePath=/api/hotels/(?<remaining>.*), /api/hotels/${remaining}
-
