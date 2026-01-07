@@ -1,62 +1,61 @@
 package ru.mephi.springfinal.hotel.service;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.mephi.springfinal.hotel.model.Hotel;
-import ru.mephi.springfinal.hotel.model.Room;
+import ru.mephi.springfinal.hotel.dto.HotelDto;
+import ru.mephi.springfinal.hotel.entity.Hotel;
+import ru.mephi.springfinal.hotel.mapper.HotelMapper;
 import ru.mephi.springfinal.hotel.repository.HotelRepository;
-import ru.mephi.springfinal.hotel.repository.RoomRepository;
 
 import java.util.List;
-import java.util.Optional;
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class HotelService {
+
     private final HotelRepository hotelRepository;
-    private final RoomRepository roomRepository;
+    private final HotelMapper hotelMapper;
 
-    public HotelService(HotelRepository hotelRepository, RoomRepository roomRepository) {
-        this.hotelRepository = hotelRepository;
-        this.roomRepository = roomRepository;
+    @Transactional
+    public HotelDto createHotel(HotelDto dto) {
+        log.info("Creating hotel: {}", dto.getName());
+        Hotel hotel = hotelMapper.toEntity(dto);
+        Hotel saved = hotelRepository.save(hotel);
+        return hotelMapper.toDto(saved);
     }
 
-    public Hotel saveHotel(Hotel hotel) {
-        return hotelRepository.save(hotel);
+    @Transactional(readOnly = true)
+    public List<HotelDto> getAllHotels() {
+        log.info("Fetching all hotels");
+        List<Hotel> hotels = hotelRepository.findAll();
+        return hotelMapper.toDtoList(hotels);
     }
 
-    public Optional<Hotel> findById(Long id) {
-        return hotelRepository.findById(id);
-    }
-
-    public List<Hotel> findAll() {
-        return hotelRepository.findAll();
+    @Transactional(readOnly = true)
+    public HotelDto getHotelById(Long id) {
+        log.info("Fetching hotel by id: {}", id);
+        Hotel hotel = hotelRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Hotel not found with id: " + id));
+        return hotelMapper.toDtoWithRooms(hotel);
     }
 
     @Transactional
-    public Room addRoom(Long hotelId, Room room) {
-        Hotel hotel = hotelRepository.findById(hotelId).orElseThrow();
-        room.setHotel(hotel);
-        return roomRepository.save(room);
-    }
-
-    public Optional<Room> findRoom(Long hotelId, Long roomId) {
-        return roomRepository.findByHotelIdAndId(hotelId, roomId);
-    }
-
-    @Transactional
-    public boolean confirmAvailability(Long hotelId, Long roomId) {
-        Room room = findRoom(hotelId, roomId).orElseThrow();
-        if (!room.isAvailable()) return false;
-        room.setAvailable(false);
-        roomRepository.save(room);
-        return true;
+    public HotelDto updateHotel(Long id, HotelDto dto) {
+        log.info("Updating hotel with id: {}", id);
+        Hotel hotel = hotelRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Hotel not found with id: " + id));
+        hotelMapper.updateEntity(dto, hotel);
+        Hotel updated = hotelRepository.save(hotel);
+        return hotelMapper.toDto(updated);
     }
 
     @Transactional
-    public void release(Long hotelId, Long roomId) {
-        Room room = findRoom(hotelId, roomId).orElseThrow();
-        room.setAvailable(true);
-        roomRepository.save(room);
+    public void deleteHotel(Long id) {
+        log.info("Deleting hotel with id: {}", id);
+        hotelRepository.deleteById(id);
     }
 }
 

@@ -11,6 +11,9 @@ eureka:
 spring:
   application:
     name: eureka-server
+  cloud:
+    compatibility-verifier:
+      enabled: false
 
 management:
   endpoints:
