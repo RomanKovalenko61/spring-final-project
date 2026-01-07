@@ -143,6 +143,10 @@ mvn spring-boot:run
 
 **Интеграционные тесты требуют запущенных сервисов!**
 
+> Примечание: после правок часть тестов поддерживает offline-режим с помощью тестовых моков.
+> - `ConcurrentBookingTest` (модуль `spring-final-booking`) использует `TestHotelServiceConfig` и может выполняться без реального Hotel Service.
+> - `HotelIntegrationTest` запускается через MockMvc с профилем `test` (Security фильтры отключены для удобства).
+
 ```bash
 # 1. Сначала запустите все сервисы
 make start
@@ -914,4 +918,3 @@ Hotel Service отслеживает количество бронировани
 Все сервисы поддерживают correlation ID через MDC:
 - Заголовок `X-Correlation-Id` прослеживается через все сервисы
 - Логи включают correlation ID для трассировки запросов
-

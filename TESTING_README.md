@@ -31,6 +31,35 @@ make test
 - `503 Service Unavailable`
 - `Timeout exceptions`
 
+### Офлайн-режим (какие тесты можно запускать без поднятых сервисов)
+
+После правок тестов некоторые сценарии поддерживают локальную (offline) работу с использованием мока `HotelServiceClient`.
+
+- `ConcurrentBookingTest` (модуль `spring-final-booking`) использует тестовую конфигурацию-мок
+  `spring-final-booking/src/test/java/ru/mephi/springfinal/booking/config/TestHotelServiceConfig.java` —
+  этот тест моделирует подтверждение/освобождение номеров и может запускаться без реального Hotel Service.
+
+- `HotelIntegrationTest` (модуль `spring-final-hotel`) выполняется через MockMvc и, как правило, не требует внешних сервисов; однако некоторые тесты могли быть настроены на использование Security — при профиле `test` Security фильтры отключены для удобства запуска.
+
+- Большинство остальных интеграционных тестов (например, `BookingIntegrationTest`) в стандартной конфигурации ожидают наличие запущенного Hotel Service / Eureka; их можно модифицировать аналогичным образом (ввести моки) если нужно запускать полностью offline.
+
+### Команды для запуска (offline vs full)
+
+```bash
+# Запуск конкретного теста, использующего мок (offline):
+cd spring-final-booking
+mvn clean test -Dtest=ConcurrentBookingTest
+
+# Запуск конкретного теста модуля (через корень проекта):
+mvn -pl spring-final-booking -am test -Dtest=ConcurrentBookingTest
+
+# Полный запуск (требует запущенных сервисов):
+make start && sleep 60 && make test
+
+# Для гарантированной чистоты сборки перед запуском тестов:
+mvn clean
+```
+
 ### Альтернативные варианты:
 
 ```bash

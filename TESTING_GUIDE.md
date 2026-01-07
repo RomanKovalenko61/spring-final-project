@@ -92,6 +92,25 @@
 ✓ testConflictOnDoubleBooking() - HTTP 409 при конфликте
 ```
 
+## Offline vs Full testing
+
+В проекте часть тестов можно запускать в локальном (offline) режиме — без поднятых внешних сервисов (Eureka, Hotel Service). Это реализовано с помощью тестовых конфигураций и моков.
+
+- `ConcurrentBookingTest` (модуль `spring-final-booking`) использует мок `TestHotelServiceConfig`:
+  `spring-final-booking/src/test/java/ru/mephi/springfinal/booking/config/TestHotelServiceConfig.java`.
+  Этот мок моделирует:
+  - список доступных комнат (id 1,2,3),
+  - подтверждение доступности (confirmAvailability) с проверкой конфликтов по датам и идемпотентностью по `requestId`,
+  - освобождение резервации (`releaseReservation`).
+
+- `HotelIntegrationTest` (модуль `spring-final-hotel`) выполняется через MockMvc и в профиле `test` запускается с отключёнными Security-фильтрами (MockMvc с `addFilters = false`), поэтому его можно запускать без полного стека.
+
+- `BookingIntegrationTest` и ряд других тестов по умолчанию ожидают доступности Hotel Service / Eureka. Для запуска их offline требуется добавить аналогичные моки или запустить сервисы.
+
+Рекомендации:
+- Для быстрого локального запуска тестов запускайте специально помеченные offline-тесты (см. выше).
+- Для полного E2E покрытия поднимите сервисы через `make start` и выполняйте `make test`.
+
 ## Запуск тестов
 
 ### ⚠️ Важное предупреждение
@@ -337,4 +356,3 @@ hotel-service:
 - [ ] Chaos Engineering тесты
 - [ ] Мутационное тестирование (PIT)
 - [ ] Тесты безопасности (OWASP)
-
