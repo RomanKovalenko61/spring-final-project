@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: spring-final-hotel-test
+
+  datasource:
+    url: jdbc:h2:mem:testhoteldb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  h2:
+    console:
+      enabled: true
+
+jwt:
+  secret: test-secret-key-for-jwt-token-generation-in-tests-must-be-long-enough
+
+server:
+  port: 0
+
+logging:
+  level:
+    ru.mephi.springfinal: DEBUG
+    org.springframework.web: INFO
+    org.hibernate: INFO

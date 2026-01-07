@@ -1,5 +1,5 @@
 # New robust Makefile for building and managing services
-.PHONY: help build clean compile start stop restart status logs logs-eureka logs-hotel logs-booking logs-gateway start-eureka start-hotel start-booking start-gateway package run-jars dev backup
+.PHONY: help build clean compile test start stop restart status logs logs-eureka logs-hotel logs-booking logs-gateway start-eureka start-hotel start-booking start-gateway package run-jars dev backup
 
 # Настройки
 PROJECT_DIR := $(CURDIR)
@@ -21,6 +21,7 @@ help: ## Show this help
 	@echo ""
 	@echo "  build            - full build (mvn clean install -DskipTests)"
 	@echo "  compile          - compile all modules (mvn -DskipTests clean compile)"
+	@echo "  test             - run all tests (mvn test)"
 	@echo "  start            - start all services (eureka -> hotel -> booking -> gateway)"
 	@echo "  stop             - stop all running services (by pid files)"
 	@echo "  restart          - restart all services"
@@ -51,6 +52,11 @@ compile: ## Compile only
 	@echo "$(YELLOW)Compiling modules...$(NC)"
 	mvn -DskipTests clean compile
 	@echo "$(GREEN)Compile finished$(NC)"
+
+test: ## Run all tests
+	@echo "$(YELLOW)Running tests...$(NC)"
+	mvn test
+	@echo "$(GREEN)Tests completed$(NC)"
 
 package: build
 

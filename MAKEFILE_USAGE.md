@@ -9,6 +9,32 @@
 - `make build` - Полная сборка проекта (mvn clean install -DskipTests)
 - `make package` - Сборка JAR файлов (mvn package)
 
+### Тестирование
+
+- `make test` - Запуск всех тестов (mvn test)
+
+**⚠️ ВАЖНО:** Для запуска интеграционных тестов необходимо, чтобы **все сервисы были запущены**:
+```bash
+# 1. Сначала запустите все сервисы
+make start
+
+# 2. Дождитесь полной инициализации (примерно 30-60 секунд)
+make status
+
+# 3. Теперь можно запускать тесты
+make test
+```
+
+Альтернативно, можно запускать только unit-тесты без сервисов:
+```bash
+# Запуск тестов конкретного модуля
+cd spring-final-booking
+mvn test -Dtest=BookingIntegrationTest
+
+cd spring-final-hotel
+mvn test -Dtest=HotelIntegrationTest
+```
+
 ### Управление сервисами
 
 - `make start` - Запуск всех сервисов в правильном порядке (eureka → hotel → booking → gateway)
@@ -52,6 +78,26 @@ make start
 
 # 3. Проверить статус
 make status
+
+# 4. (Опционально) Запустить тесты
+make test
+```
+
+### Запуск тестов
+
+```bash
+# 1. Убедитесь, что все сервисы запущены
+make start
+
+# 2. Дождитесь готовности сервисов (30-60 секунд)
+sleep 60
+
+# 3. Проверьте статус
+make status
+# Все сервисы должны показывать RUNNING
+
+# 4. Запустите тесты
+make test
 ```
 
 ### Разработка
